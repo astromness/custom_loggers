@@ -17,7 +17,7 @@ class SequenceName:
         self.value = value
 
     def __str__(self):
-        return u'\u001b[{}m'.format(str(self.value))
+        return '\033[{}m'.format(str(self.value))
 
     def __add__(self, other):
         return str(self) + str(other)
@@ -54,7 +54,7 @@ class FontStyles():
     UNDERSCORE = SequenceName(4)
     STRIKE = SequenceName(9)
     THICK_UNDERSCORE = SequenceName(21)
-    RESET = SequenceName(0)
+    RESET = "\33[0;0m"
     REVERSE = SequenceName(7)
 
 

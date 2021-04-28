@@ -1,4 +1,4 @@
-from ColoredFormatter import ColoredFormatter
+from custom_loggers.ColoredFormatter import ColoredFormatter
 import logging
 from typing import Union
 import inspect
@@ -38,14 +38,15 @@ class CustomLogger(logging.Logger):
     default_colored_format:str the format string that the formatter will use
     default_asctime_format:str the asctime format the formatter will use
     """
-    add_script_location = False
-    logging_disabled = False
-    default_logging_level = 0
-    log_level = 0
-    inclusive = True
-    default_formatter = ColoredFormatter
-    default_colored_format = '%(asctime)s %(levelname)-8s %(name)s: %(message)s'
-    default_asctime_format = "%Y-%m-%d %H:%M:%S"
+    add_script_location: bool = False
+    logging_disabled: bool = False
+    default_logging_level: int = 0
+    global_log_level: int = 0
+    use_global_log_level_default: bool = False
+    inclusive: bool = True
+    default_formatter: logging.Formatter = ColoredFormatter
+    default_colored_format: str = '%(asctime)s %(levelname)-8s %(name)s: %(message)s'
+    default_asctime_format: str = "%Y-%m-%d %H:%M:%S"
 
     _levels = dict(
         CRITICAL=50,
@@ -69,16 +70,18 @@ class CustomLogger(logging.Logger):
         :param channel: The channel this lagger is assigned to
             channels can be disabled and re-enabled using channel_disabled(bool)
         """
-        if level is None:
-            level = CustomLogger.default_logging_level
 
         super().__init__(name, 0)
-        self.setLevel(level)
         self._channel = channel
         self._disabled = False
         # looks like a duplicate but is not. This will ensure the channel passed into the constructor is added
         # to the channels dictionary
         self.channel = channel
+        if level is None:
+            self._log_level = CustomLogger.default_logging_level
+        else:
+            self._log_level = self.check_level(level)
+        self.use_global_level: bool = CustomLogger.use_global_log_level_default
 
         if add_formatter:
             console_handler = logging.StreamHandler()
@@ -112,6 +115,14 @@ class CustomLogger(logging.Logger):
         self.log("ERROR", msg, *args, **kwargs)
 
     @property
+    def level(self):
+        return self._log_level
+
+    @level.setter
+    def level(self, value):
+        self.check_level(value)
+
+    @property
     def channel(self):
         return self._channel
 
@@ -139,7 +150,8 @@ class CustomLogger(logging.Logger):
     def disabled(self, value: bool):
         self._disabled = value
 
-    def add_level(self, level_name: str, level_value: int, dynamic_create_method: bool = False):
+    @classmethod
+    def add_level(cls, level_name: str, level_value: int, dynamic_create_method: bool = False):
         """
         Adds a custom level to CustomLogger class affecting ALL instances of the class
         This can also be used to modify the integer value of a level
@@ -168,12 +180,12 @@ class CustomLogger(logging.Logger):
         :return: None
         """
 
-        self.__class__._levels[level_name.upper()] = level_value
-        self.__class__._level_names[level_value] = level_name.upper()
+        cls._levels[level_name.upper()] = level_value
+        cls._level_names[level_value] = level_name.upper()
 
         if dynamic_create_method:
             new_method = lambda new_self, msg, *args, **kwargs: new_self.log(level_value, msg, *args, **kwargs)
-            exec('self.__class__.{}=new_method'.format(level_name.replace(" ", "_").lower()))
+            exec('cls.{}=new_method'.format(level_name.replace(" ", "_").lower()))
 
     @classmethod
     def check_level(cls, level: Union[str, int]):
@@ -221,10 +233,14 @@ class CustomLogger(logging.Logger):
         if self.disabled:
             return False
 
+        comp_level = self.level
+        if self.use_global_level:
+            comp_level = CustomLogger.global_log_level
+
         if CustomLogger.inclusive:
-            return level <= CustomLogger.log_level or CustomLogger.log_level == 0
+            return level <= comp_level or comp_level == 0
         else:
-            return level == CustomLogger.log_level or CustomLogger.log_level == 0
+            return level == comp_level or comp_level == 0
 
     def log(self, level: Union[str, int], msg, *args, **kwargs):
         """
@@ -287,42 +303,3 @@ class CustomLogger(logging.Logger):
 
         super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
 
-
-if __name__ == '__main__':
-    CustomLogger.inclusive = True
-    CustomLogger.log_level = 0
-    from ColoredFormatter import ColoredFormatter
-    from Colors import Foreground255
-
-    ColoredFormatter.assign_level_color("yup", Foreground255(226))
-
-    logger = CustomLogger("testLogger")
-    logger2 = CustomLogger("test2logger")
-    logger3 = CustomLogger("channel_tester", channel="NewChannel")
-    logger4 = CustomLogger("channel_tester2", channel="NewChannel")
-    logger3.info("channel test on")
-    logger4.info("channel test on")
-    CustomLogger.channel_disabled("NewChannel", True)
-    logger3.info("channel test off")
-    logger4.info("channel test off")
-    logger2.add_level("yup", 1, True)
-    logger2.log("yup", "original message")
-    logger.yup("my new message")
-    logger.log("trace", "just checking")
-    logger.error("Hello")
-    logger.info("Hello")
-    logger.debug("Hello")
-    logger.warning("Hello")
-    logger.critical("Hello")
-    try:
-        raise ValueError("This is a complex error")
-    except Exception as e:
-        logger.exception("An exception occurred")
-    logger.disabled = True
-    logger.info("This should not print because is disabled")
-    logger.disabled = False
-    CustomLogger.logging_disabled = True
-    logger.info("Should be disabled")
-    logger2.info("Should be disabled")
-    logger3.info("Should be disabled")
-    logger4.info("Should be disabled")

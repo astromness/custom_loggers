@@ -1,6 +1,6 @@
 import logging
 import platform
-from Colors import *
+from custom_loggers.Colors import Foreground255,SequenceName,FontStyles
 from typing import Union
 
 
@@ -57,8 +57,8 @@ class ColoredFormatter(logging.Formatter):
         s = super().format(record)
         if self.use_color and (not platform.system() == 'Windows' or ColoredFormatter.WINDOWS_OVERRIDE):
             if levelname in ColoredFormatter._COLORS_ASSIGNMENTS.keys():
-                return FontStyles.RESET + ColoredFormatter._COLORS_ASSIGNMENTS[levelname] + s + FontStyles.RESET
+                return ColoredFormatter._COLORS_ASSIGNMENTS[levelname] + s + FontStyles.RESET
             else:
-                return FontStyles.RESET + Foreground255(249) + s + FontStyles.RESET
+                return Foreground255(249) + s + FontStyles.RESET
         else:
             return s

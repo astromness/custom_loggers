@@ -10,10 +10,7 @@ setup(
   url = 'https://github.com/astromness/custom_loggers',
   download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz',    # I explain this later on
   keywords = ['logging', 'colored', 'loglevel', 'console'],
-  install_requires=[
-          'validators',
-          'beautifulsoup4',
-      ],
+  install_requires=[],
   classifiers=[
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
