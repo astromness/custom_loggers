@@ -1,13 +1,13 @@
-#Custom Loggers
+# Custom Loggers
 A module that extends the standard python logging module
 ___
 
 In the standard python logging module there are things that are difficult to accomplish without quite a bit of overhead. 
 These classes are meant to simplify that overhead and to be extended for specific use.
 
-#Classes
+# Classes
 ___
-##CustomLogger
+## CustomLogger
 ```python
 from custom_loggers import CustomLogger
 ```
@@ -16,8 +16,8 @@ from custom_loggers import CustomLogger
 Extends the logging.Logger class
 This is the primary class you will use/inherit
 
-###examples
-####general use:
+### examples
+#### general use:
 ```python
 from custom_loggers import CustomLogger, ColoredFormatter, Foreground255
 #setting class level settings
@@ -59,7 +59,7 @@ logger2.info("Should be disabled")
 logger3.info("Should be disabled")
 logger4.info("Should be disabled")
 ```
-####Extending
+#### Extending
 ```python
 from custom_loggers import CustomLogger,ColoredFormatter,Foreground255
 
@@ -80,7 +80,7 @@ logger.newlevel("this shows your new level")
 ```
 
 
-###class attributes
+### class attributes
 These values affect every instance of CustomLogger
 
 `add_script_location`: bool will add the file and line number of the file where log was called
@@ -108,7 +108,7 @@ log leve this determines whether we compare with the instance or with the global
 `default_asctime_format`:str the asctime format the formatter will use
 
 
-##ColoredFormatter
+## ColoredFormatter
 ```python
 from custom_loggers import ColoredFormatter
 ```
@@ -125,7 +125,7 @@ Colored formatter has an assign_level_color method used to assign foreground and
 the Colors module discussed below. the color can be a string (usually a color escape color which is put in front of 
 the log line which starts the color print)
 
-##Colors
+## Colors
 ```python
 from custom_loggers import Colors
 ```
@@ -149,7 +149,7 @@ Colors.print_16_colors()
 
 ```
 
-##255 - colors
+## 256 - colors
 These colors may not be supported in all terminals, but give you the most variety:
 ```python
 from custom_loggers import Colors
@@ -164,7 +164,7 @@ Colors.print_255_colors()
 
 ```
 
-####Color Printout
+#### Color Printout
 ![Assets/colors_pic.png](Assets/colors_pic.png)
 
 
