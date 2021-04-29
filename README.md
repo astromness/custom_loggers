@@ -111,30 +111,42 @@ from custom_loggers import ColoredFormatter
 For all things colored
 
 There are 3 Things to note here:
-### 1:
+### 1: Windows
 Color text doesn't work on all terminals primarily you will find issues in Windows CMD and Powershell.
-By default colors will not attempt to print on Windows you can override this by setting WINDOWS_OVERRIDE=True
+By default, colors will not attempt to print on Windows you can override this by setting WINDOWS_OVERRIDE=True
 ```python
 from custom_loggers import ColoredFormatter
 ColoredFormatter.WINDOWS_OVERRIDE = True
 ```
 There are tools to add ANSI support to Windows terminals in which case colors *may work*.
 
-### 2:
+### 2: Additional Formatting
 ColoredFormatter adds three additional formatting options for your logging format.
 
 All three are associated with getting the script that calls one of a CustomLogger.log methods. It grabs the script 
 location and assigns this to these formatting names. These are similar to 'filepath', 'filename', 'lineno' but could be 
-different. These will be more accurate for CustomLoggers
+different. These will be more accurate for CustomLoggers. 
 `scriptpath` : the full path to the script that called log
 `scriptname` : the file name of the script
 `scriptline` : the line number of the script
 
+As a side note if you use a plugin for your IDE you may be able to get the filename and line number to have be a 
+hyperlink in the IDE's terminal. For example in PyCharm if you use the below format {scriptname}, line {scriptline}
+and install the Awesome Console plugin. each of those references will take you directly to the script.
+
 ```python
 from custom_loggers import CustomLogger
 
-CustomLogger.default_colored_format = '%(asctime)s [%(scriptname)s, %(scriptline)s] %(levelname)-8s %(name)s: %(message)s'
-
+CustomLogger.default_colored_format = '%(asctime)s [%(scriptname)s, line %(scriptline)-3s] %(levelname)-8s %(name)s: %(message)s'
+# Will output like this
+# 21-04-29 08:39 [main.py, line 15 ] INFO     channel_tester: channel test on
+# 21-04-29 08:39 [main.py, line 16 ] INFO     channel_tester2: channel test on
+# 21-04-29 08:39 [main.py, line 23 ] TRACE    testLogger: just checking
+# 21-04-29 08:39 [main.py, line 24 ] ERROR    testLogger: Hello
+# 21-04-29 08:39 [main.py, line 25 ] INFO     testLogger: Hello
+# 21-04-29 08:39 [main.py, line 26 ] DEBUG    testLogger: Hello
+# 21-04-29 08:39 [main.py, line 27 ] WARNING  testLogger: Hello
+# 21-04-29 08:39 [main.py, line 28 ] WARNING  testLogger: Hello
 ```
 
 ### 3:
@@ -152,6 +164,11 @@ the log line which starts the color print)
 ## Colors
 ```python
 from custom_loggers import Colors
+```
+or directly with the class you are looking for
+```python
+from custom_loggers import ForeGroundColors, BackGroundColors, Foreground255, Background255 
+from custom_loggers import print_16_colors,print_255_colors
 ```
 
 Colors is an internal module for getting and combining colors and font styles.
@@ -189,6 +206,6 @@ Colors.print_255_colors()
 ```
 
 #### Color Printout
-![Assets/colors_pic.png](Assets/colors_pic.png)
+![color_printout](https://github.com/astromness/custom_loggers/blob/main/Assets/colors_pic.png?raw=true)
 
 

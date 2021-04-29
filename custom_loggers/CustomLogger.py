@@ -44,7 +44,7 @@ class CustomLogger(logging.Logger):
     use_global_log_level_default: bool = False
     inclusive: bool = True
     default_formatter: logging.Formatter = ColoredFormatter
-    default_colored_format: str = '%(asctime)s [%(scriptname)s, %(scriptline)s] %(levelname)-8s %(name)s: %(message)s'
+    default_colored_format: str = '%(asctime)s [%(scriptname)s, line %(scriptline)-3s] %(levelname)-8s %(name)s: %(message)s'
     default_asctime_format: str = "%y-%m-%d %H:%M"
 
     _levels = dict(
