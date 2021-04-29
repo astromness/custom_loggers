@@ -9,6 +9,8 @@ with open(str(readme), encoding='utf-8',mode='r') as f:
 setup(
     name='custom_loggers',
     packages=['custom_loggers'],
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     version='1.0.1',
     license='MIT',
     description='A Custom Logger Class for creating colored, adding level, other misc features',
