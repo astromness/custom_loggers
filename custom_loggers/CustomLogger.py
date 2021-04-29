@@ -38,15 +38,14 @@ class CustomLogger(logging.Logger):
     default_colored_format:str the format string that the formatter will use
     default_asctime_format:str the asctime format the formatter will use
     """
-    add_script_location: bool = False
     logging_disabled: bool = False
     default_logging_level: int = 0
     global_log_level: int = 0
     use_global_log_level_default: bool = False
     inclusive: bool = True
     default_formatter: logging.Formatter = ColoredFormatter
-    default_colored_format: str = '%(asctime)s %(levelname)-8s %(name)s: %(message)s'
-    default_asctime_format: str = "%Y-%m-%d %H:%M:%S"
+    default_colored_format: str = '%(asctime)s [%(scriptname)s, line %(scriptline)-3s] %(levelname)-8s %(name)s: %(message)s'
+    default_asctime_format: str = "%y-%m-%d %H:%M"
 
     _levels = dict(
         CRITICAL=50,
@@ -257,49 +256,3 @@ class CustomLogger(logging.Logger):
             level = self.check_level(level)
 
         return super().log(level, msg, *args, **kwargs)
-
-    def _log(self, level, msg, args, exc_info=None, extra=None, stack_info=False, stacklevel=1):
-        """
-        Used to add the script location to the super implementation, when add_class_from_frame is set to True
-        It will add it to the beginning of msg
-
-        :param level:
-        :param msg:
-        :param args:
-        :param exc_info:
-        :param extra:
-        :param stack_info:
-        :param stacklevel:
-        :return:
-        """
-
-        def get_class_from_frame(fr):
-            import inspect
-            insp_args, _, _, value_dict = inspect.getargvalues(fr)
-            # we check the first parameter for the frame function is
-            # named 'self'
-            if len(insp_args) and insp_args[0] == 'self':
-                # in that case, 'self' will be referenced in value_dict
-                instance = value_dict.get('self', None)
-                if instance:
-                    # return its class
-                    return getattr(instance, '__class__', None)
-                instance = value_dict.get('cls', None)
-                if instance:
-                    return instance
-            # return None otherwise
-            return None
-
-        if self.__class__.add_script_location:
-            frame = inspect.currentframe()
-            while True:
-                class_type = get_class_from_frame(frame)
-                if class_type != self.__class__:
-                    break
-                frame = frame.f_back
-
-            func = frame.f_code
-            msg = f"[{Path(func.co_filename).name}, line {str(frame.f_lineno).ljust(4)}] " + msg
-
-        super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
-
