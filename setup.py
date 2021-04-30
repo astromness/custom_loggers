@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 from pathlib import Path
 
 parent = Path(__file__).parent
