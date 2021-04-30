@@ -1,5 +1,6 @@
-from custom_loggers import CustomLogger,ColoredFormatter,Colors
+from custom_loggers import CustomLogger, ColoredFormatter, Colors
 from argparse import ArgumentParser
+
 
 def main():
     CustomLogger.inclusive = True
@@ -45,6 +46,7 @@ def main():
         inclusive = False
         default_colored_format = '%(levelname)-8s: %(message)s'
         has_run_once = False
+        logging_disabled = True
 
         CustomLogger.add_level("NEWLEVEL", 1)
         ColoredFormatter.assign_level_color("NEWLEVEL", Colors.Foreground255(77))
@@ -53,13 +55,20 @@ def main():
             self.log("NEWLEVEL", msg)
 
     logger = NewLogger("TestLogger")
+
+    # make sure class attribute overrides are now working
+    logger2.info("Should still be on")
+    logger.info("Should not be on")
+    NewLogger.logging_disabled = False
+    logger.info("Should now be on")
     logger.newlevel("this shows your new level")
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    ap=ArgumentParser()
-    ap.add_argument("--show_colors","-s",required=False,default=False,action="store_true")
-    arguments=ap.parse_args()
+    ap = ArgumentParser()
+    ap.add_argument("--show_colors", "-s", required=False, default=False, action="store_true")
+    arguments = ap.parse_args()
 
     if arguments.show_colors:
         Colors.print_16_colors()

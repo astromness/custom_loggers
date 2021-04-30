@@ -1,9 +1,13 @@
 import logging
 import platform
-from custom_loggers.Colors import Foreground255,SequenceName,FontStyles
+from custom_loggers.Colors import Foreground255, SequenceName, FontStyles
 from typing import Union
 import inspect
 from pathlib import Path
+from os import system
+
+if platform.system() == 'Windows':
+    system("")
 
 
 class ColoredFormatter(logging.Formatter):
@@ -26,7 +30,7 @@ class ColoredFormatter(logging.Formatter):
         'ERROR': Foreground255(196),
         'TRACE': Foreground255(14)
     }
-    use_script_location=False
+    use_script_location = False
 
     @classmethod
     def assign_level_color(cls, levelname: str, color: Union[str, SequenceName]) -> None:
@@ -64,33 +68,33 @@ class ColoredFormatter(logging.Formatter):
             # we check the first parameter for the frame function is
             # named 'self' this 98% means it's a class
             if len(insp_args) and insp_args[0] == 'self':
-                instance = value_dict.get('self', None)
-                return instance
+                inst = value_dict.get('self', None)
+                return inst
             return None
 
         frame = inspect.currentframe()
         while True:
             from logging import Logger
             instance = get_instance_from_frame(frame)
-            if Path(frame.f_code.co_filename).name=="__init__.py":
+            if Path(frame.f_code.co_filename).name == "__init__.py":
                 pass
-            elif not isinstance(instance,ColoredFormatter) and not isinstance(instance,Logger):
+            elif not isinstance(instance, ColoredFormatter) and not isinstance(instance, Logger):
                 break
             frame = frame.f_back
 
         func = frame.f_code
 
-        script_path=Path(func.co_filename)
-        record.scriptpath=str(script_path)
-        record.scriptname=script_path.name
-        record.scriptline=frame.f_lineno
+        script_path = Path(func.co_filename)
+        record.scriptpath = str(script_path)
+        record.scriptname = script_path.name
+        record.scriptline = frame.f_lineno
 
-        s=super().format(record)
+        s = super().format(record)
 
-        if self.use_color and (not platform.system() == 'Windows' or ColoredFormatter.WINDOWS_OVERRIDE):
-            if levelname in ColoredFormatter._COLORS_ASSIGNMENTS.keys():
-                return ColoredFormatter._COLORS_ASSIGNMENTS[levelname] + s + FontStyles.RESET
-            else:
-                return Foreground255(249) + s + FontStyles.RESET
-        else:
+        if self.__class__.WINDOWS_OVERRIDE:
             return s
+
+        if levelname in self.__class__._COLORS_ASSIGNMENTS.keys():
+            return self.__class__._COLORS_ASSIGNMENTS[levelname] + s + FontStyles.RESET
+        else:
+            return Foreground255(249) + s + FontStyles.RESET

@@ -1,8 +1,6 @@
 from custom_loggers.ColoredFormatter import ColoredFormatter
 import logging
 from typing import Union
-import inspect
-from pathlib import Path
 
 
 class CustomLogRecord(logging.LogRecord):
@@ -77,17 +75,17 @@ class CustomLogger(logging.Logger):
         # to the channels dictionary
         self.channel = channel
         if level is None:
-            self._log_level = CustomLogger.default_logging_level
+            self._log_level = self.__class__.default_logging_level
         else:
             self._log_level = self.check_level(level)
-        self.use_global_level: bool = CustomLogger.use_global_log_level_default
+        self.use_global_level: bool = self.__class__.use_global_log_level_default
 
         if add_formatter:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(self.level)
 
-            formatter = CustomLogger.default_formatter(CustomLogger.default_colored_format,
-                                                       CustomLogger.default_asctime_format)
+            formatter = self.__class__.default_formatter(self.__class__.default_colored_format,
+                                                         self.__class__.default_asctime_format)
             console_handler.setFormatter(formatter)
 
             self.addHandler(console_handler)
@@ -127,8 +125,8 @@ class CustomLogger(logging.Logger):
 
     @channel.setter
     def channel(self, channel: str):
-        if channel not in CustomLogger._channels.keys():
-            CustomLogger._channels[channel.upper()] = True
+        if channel not in self.__class__._channels.keys():
+            self.__class__._channels[channel.upper()] = True
 
         self._channel = channel
 
@@ -143,7 +141,7 @@ class CustomLogger(logging.Logger):
 
         :return:
         """
-        return CustomLogger.logging_disabled or not CustomLogger._channels[self._channel.upper()] or self._disabled
+        return self.__class__.logging_disabled or not self.__class__._channels[self._channel.upper()] or self._disabled
 
     @disabled.setter
     def disabled(self, value: bool):
@@ -234,9 +232,9 @@ class CustomLogger(logging.Logger):
 
         comp_level = self.level
         if self.use_global_level:
-            comp_level = CustomLogger.global_log_level
+            comp_level = self.__class__.global_log_level
 
-        if CustomLogger.inclusive:
+        if self.__class__.inclusive:
             return level <= comp_level or comp_level == 0
         else:
             return level == comp_level or comp_level == 0
