@@ -88,7 +88,7 @@ These values affect every instance of CustomLogger
 `default_logging_level`: int the logging level assigned to each logger by default
 
 
-`use_global_log_level_default`: the default value of use_global_log which is used when comparing a loging event with the 
+`use_global_log_level_default`: the default value of use_global_log which is used when comparing a logging event with the 
 log leve this determines whether we compare with the instance or with the global log_level
 
 `global_log_level`: int the current log level for all instances. (only effective when use_global_log_level is True)
@@ -111,16 +111,15 @@ from custom_loggers import ColoredFormatter
 For all things colored
 
 There are 3 Things to note here:
-### 1:
+### 1: Compatibility
 Color text doesn't work on all terminals primarily you will find issues in Windows CMD and Powershell.
-By default colors will not attempt to print on Windows you can override this by setting WINDOWS_OVERRIDE=True
+We've set it up to be as compatible as possible however if you need to turn it off you can set WINDOWS_OVERRIDE to True
 ```python
 from custom_loggers import ColoredFormatter
 ColoredFormatter.WINDOWS_OVERRIDE = True
 ```
-There are tools to add ANSI support to Windows terminals in which case colors *may work*.
 
-### 2:
+### 2: Color Assignment
 ColoredFormatter adds three additional formatting options for your logging format.
 
 All three are associated with getting the script that calls one of a CustomLogger.log methods. It grabs the script 
@@ -158,7 +157,7 @@ Colors is an internal module for getting and combining colors and font styles.
 This is done by generating the color escape codes and assigning them to the SequenceName class.
 
 ## 16 - colors
-The standard 16 colors supported by the majority of mondern terminals are found in:
+The standard 16 colors supported by the majority of modern terminals are found in:
 ```python
 from custom_loggers import Colors
 
@@ -183,7 +182,7 @@ Colors.Background255
 #These are accessed by assigning which color you want.
 Colors.Foreground255(77)
 
-#These can also be vissually seen like so
+#These can also be visually seen like so
 Colors.print_255_colors()
 
 ```
