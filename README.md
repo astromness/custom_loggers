@@ -83,16 +83,12 @@ logger.newlevel("this shows your new level")
 ### class attributes
 These values affect every instance of CustomLogger
 
-`add_script_location`: bool will add the file and line number of the file where log was called
-    * In PyCharm if you install the Awesome Console plugin it will make it a hyperlink that will navigate you to
-      the code where log was called
-
 `logging_disabled`: bool enables or disables ALL Logging from CustomLogger
 
 `default_logging_level`: int the logging level assigned to each logger by default
 
 
-`use_global_log_level_default`: the default value of use_global_log which is used when comparing a loging event with the 
+`use_global_log_level_default`: the default value of use_global_log which is used when comparing a logging event with the 
 log leve this determines whether we compare with the instance or with the global log_level
 
 `global_log_level`: int the current log level for all instances. (only effective when use_global_log_level is True)
@@ -114,7 +110,34 @@ from custom_loggers import ColoredFormatter
 ```
 For all things colored
 
-The primary thing you need to know here is:
+There are 3 Things to note here:
+### 1: Compatibility
+Color text doesn't work on all terminals primarily you will find issues in Windows CMD and Powershell.
+We've set it up to be as compatible as possible however if you need to turn it off you can set WINDOWS_OVERRIDE to True
+```python
+from custom_loggers import ColoredFormatter
+ColoredFormatter.WINDOWS_OVERRIDE = True
+```
+
+### 2: Color Assignment
+ColoredFormatter adds three additional formatting options for your logging format.
+
+All three are associated with getting the script that calls one of a CustomLogger.log methods. It grabs the script 
+location and assigns this to these formatting names. These are similar to 'filepath', 'filename', 'lineno' but could be 
+different. These will be more accurate for CustomLoggers
+`scriptpath` : the full path to the script that called log
+`scriptname` : the file name of the script
+`scriptline` : the line number of the script
+
+```python
+from custom_loggers import CustomLogger
+
+CustomLogger.default_colored_format = '%(asctime)s [%(scriptname)s, %(scriptline)s] %(levelname)-8s %(name)s: %(message)s'
+
+```
+
+### 3:
+Assigning Colors to level is done like below:
 ```python
 from custom_loggers import ColoredFormatter
 from custom_loggers import Colors
@@ -134,7 +157,7 @@ Colors is an internal module for getting and combining colors and font styles.
 This is done by generating the color escape codes and assigning them to the SequenceName class.
 
 ## 16 - colors
-The standard 16 colors supported by the majority of mondern terminals are found in:
+The standard 16 colors supported by the majority of modern terminals are found in:
 ```python
 from custom_loggers import Colors
 
@@ -159,7 +182,7 @@ Colors.Background255
 #These are accessed by assigning which color you want.
 Colors.Foreground255(77)
 
-#These can also be vissually seen like so
+#These can also be visually seen like so
 Colors.print_255_colors()
 
 ```
