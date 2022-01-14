@@ -5,6 +5,7 @@ from typing import Union
 import inspect
 from pathlib import Path
 from os import system
+from datetime import datetime
 
 if platform.system() == 'Windows':
     system("")
@@ -48,6 +49,18 @@ class ColoredFormatter(logging.Formatter):
     def __init__(self, msg, datefmt=None, style='%', use_color=True):
         super().__init__(msg, datefmt, style)
         self.use_color = use_color
+
+    def formatTime(self, record, datefmt=None) -> str:
+        ct=record.created
+
+        if isinstance(ct,int):
+            ct = datetime.fromtimestamp(ct)
+
+        if datefmt:
+            s = ct.strftime(datefmt)
+        else:
+            s = ct.strftime(self.default_time_format)
+        return s
 
     def format(self, record):
         """

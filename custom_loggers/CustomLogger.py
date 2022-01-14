@@ -1,6 +1,7 @@
 from custom_loggers.ColoredFormatter import ColoredFormatter
 import logging
 from typing import Union
+from datetime import datetime
 
 
 class CustomLogRecord(logging.LogRecord):
@@ -13,6 +14,7 @@ class CustomLogRecord(logging.LogRecord):
     def __init__(self, name, level, *args, **kwargs):
         super().__init__(name, level, *args, **kwargs)
         self.levelname = CustomLogger.get_level_name(level)
+        self.created:datetime = datetime.now()
 
 
 logging.setLogRecordFactory(CustomLogRecord)
@@ -43,7 +45,7 @@ class CustomLogger(logging.Logger):
     inclusive: bool = True
     default_formatter: logging.Formatter = ColoredFormatter
     default_colored_format: str = '%(asctime)s [%(scriptname)s, line %(scriptline)-3s] %(levelname)-8s %(name)s: %(message)s'
-    default_asctime_format: str = "%y-%m-%d %H:%M"
+    default_asctime_format: str = "%y-%m-%d %H:%M:%S.%f"
 
     _levels = dict(
         CRITICAL=50,
